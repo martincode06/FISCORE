@@ -1,0 +1,26 @@
+FISCORE 1.5.0 — Android 7.0 o posterior
+
+Envía FISCORE.apk por WhatsApp como DOCUMENTO.
+Ábrela en el administrador de archivos del teléfono e instálala sobre la versión anterior.
+No desinstales para conservar los datos. La app se muestra en horizontal.
+
+NOVEDADES
+- Mis equipos: icono de personas o menú de tres puntos. Guarda los jugadores y dorsales,
+  y carga cualquier plantilla como local o visitante, sin puntos ni faltas anteriores.
+  Para actualizar una plantilla, vuelve a guardarla con el mismo nombre.
+- Los jugadores con más faltas aparecen primero; en empate, se ordenan por dorsal.
+- Sin pestaña Registro ni franja inferior de estado.
+- Acceso rápido a 2 tiempos de 10 minutos; también 4 x 10 y formato personalizado.
+- Audio Official NBA Horn SFX seleccionado por el usuario. Prueba desde los tres puntos.
+- Créditos (?): Martin Villy. Consultas, contrataciones y donaciones: 925 449 100.
+  Tu apoyo voluntario ayuda a mejorar FISCORE. ¡Gracias!
+
+CONTROLES
+Corregir cambia +1/+2/+3 a −1/−2/−3. Deshacer revierte el último cambio.
+Faltas + / − usa botones directos por jugador y guarda inmediatamente.
+El reloj y los tiempos se ajustan con +/−. El dorsal se escribe con dígitos; 88 son dos toques.
+Solo los nombres usan el teclado Android, con el campo visible encima.
+24 s y 14 s controlan la posesión; también dispone de pausa independiente.
+El reloj se pausa al salir de la app. La chicharra usa el volumen de alarmas de Android.
+
+La APK funciona sin internet ni cuenta y tiene firma de desarrollo para instalación directa.
