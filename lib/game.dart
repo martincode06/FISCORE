@@ -108,6 +108,8 @@ class Game {
   bool shotExpired = false;
   bool running = false;
   bool finished = false;
+  // Team entitled to the next alternating-possession throw-in; unset at tip-off.
+  int? possessionTeam;
   int _nextId = 1;
   final List<Map<String, dynamic>> _undo = [];
 
@@ -308,11 +310,16 @@ class Game {
   }
 
   void setShotClock(int milliseconds) {
-    if (finished || running) return;
+    if (finished) return;
     shotRemainingMs = milliseconds.clamp(0, 24000);
     shotEnabled = true;
     shotHeld = false;
     shotExpired = false;
+  }
+
+  void setPossessionTeam(int? team) {
+    if (finished || (team != null && team != 0 && team != 1)) return;
+    possessionTeam = team;
   }
 
   bool nextPeriod() {
@@ -345,6 +352,7 @@ class Game {
     remainingMs = quarterMinutes * 60000;
     running = false;
     finished = false;
+    possessionTeam = null;
     resetShotClock(24);
     _undo.clear();
     _nextId = 1;
@@ -383,6 +391,7 @@ class Game {
     'shotHeld': shotHeld,
     'shotExpired': shotExpired,
     'finished': finished,
+    'possessionTeam': possessionTeam,
     'nextId': _nextId,
     'undo': _undo,
   };
@@ -408,8 +417,12 @@ class Game {
       ..shotHeld = (json['shotHeld'] as bool?) ?? false
       ..shotExpired = (json['shotExpired'] as bool?) ?? false
       ..finished = json['finished'] as bool
+      ..possessionTeam = json['possessionTeam'] as int?
       .._nextId = json['nextId'] as int;
-    if (game.teams.length != 2 ||
+    if ((game.possessionTeam != null &&
+            game.possessionTeam != 0 &&
+            game.possessionTeam != 1) ||
+        game.teams.length != 2 ||
         game.period < 1 ||
         game.periodCount < 1 ||
         game.periodCount > 12 ||

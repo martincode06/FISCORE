@@ -21,8 +21,23 @@ $versionLine = (Get-Content -LiteralPath 'pubspec.yaml' | Select-String '^versio
 $appVersion = ($versionLine -replace '^version:\s*', '').Split('+')[0].Trim()
 $apkName = "fiscore-v$appVersion.apk"
 $apkPath = Join-Path 'entrega' $apkName
-Copy-Item -LiteralPath 'build\app\outputs\flutter-apk\app-release.apk' -Destination $apkPath -Force
-Copy-Item -LiteralPath $apkPath -Destination 'entrega\FISCORE.apk' -Force
+function Copy-ApkArtifact {
+    param([string]$Source, [string]$Destination)
+    # Replace the directory entry rather than writing into an APK that a
+    # Windows indexer/viewer may still have memory-mapped.
+    $deliveryTarget = [System.IO.Path]::GetFullPath($Destination)
+    $deliveryTemp = "$deliveryTarget.$([guid]::NewGuid().ToString('N')).tmp"
+    try {
+        [System.IO.File]::Copy([System.IO.Path]::GetFullPath($Source), $deliveryTemp)
+        [System.IO.File]::Move($deliveryTemp, $deliveryTarget, $true)
+    } finally {
+        if (Test-Path -LiteralPath $deliveryTemp) {
+            Remove-Item -LiteralPath $deliveryTemp -Force
+        }
+    }
+}
+Copy-ApkArtifact -Source 'build\app\outputs\flutter-apk\app-release.apk' -Destination $apkPath
+Copy-ApkArtifact -Source $apkPath -Destination 'entrega\FISCORE.apk'
 $apkHash = (Get-FileHash -LiteralPath $apkPath -Algorithm SHA256).Hash
 Set-Content -LiteralPath 'entrega\SHA256.txt' -Value "$apkHash  $apkName"
 Write-Output "APK generada: $apkPath"

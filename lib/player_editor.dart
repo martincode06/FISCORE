@@ -99,15 +99,19 @@ class _PlayerEditorPanelState extends State<PlayerEditorPanel> {
             ),
           ),
         ),
-        TextButton(
-          onPressed: saving ? null : () => Navigator.pop(context),
-          child: const Text('Cancelar'),
+        Flexible(
+          child: TextButton(
+            onPressed: saving ? null : () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
         ),
         const SizedBox(width: 8),
-        FilledButton(
-          key: const ValueKey('save-player'),
-          onPressed: saving ? null : _save,
-          child: Text(saving ? 'Guardando…' : 'Guardar'),
+        Flexible(
+          child: FilledButton(
+            key: const ValueKey('save-player'),
+            onPressed: saving ? null : _save,
+            child: Text(saving ? 'Guardando…' : 'Guardar'),
+          ),
         ),
       ],
     ),

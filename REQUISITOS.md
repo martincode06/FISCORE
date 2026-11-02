@@ -13,6 +13,7 @@ Crear una aplicación Android instalable mediante APK para que una persona contr
 - Registro de faltas por jugador con controles +/− directos, sin selección y confirmación repetidas. El tipo de falta está siempre visible; − quita la última del tipo elegido para ese jugador. Incluye personales, técnicas, antideportivas y descalificantes, guardado automático y deshacer.
 - Exclusión al llegar a cinco faltas durante el partido y descalificación por dos técnicas, dos antideportivas, una de cada tipo o una descalificante. Se bloquean nuevas faltas para el jugador excluido; una corrección permite rehabilitarlo si corresponde.
 - Penalización del equipo después de cuatro faltas por cuarto, con indicador desde la cuarta y aviso a partir de la quinta. Las faltas siguen contándose después de cinco; no se asignan tiros libres ni puntos automáticamente.
+- Flecha manual de próximo saque alterno, independiente de los relojes, persistente entre períodos y al reabrir; se reinicia en un nuevo partido.
 - Indicación del período actual y avance manual al siguiente con el reloj en cero. Se conservan marcador y faltas individuales. Las faltas de equipo se reinician por período reglamentario y las prórrogas acumulan con el último.
 - Cantidad de tiempos configurable de 1 a 12; duración de 1 a 99 minutos y prórrogas de 1 a 30 minutos. Accesos a 4 × 10 (base FIBA) y 2 × 10 (personalizado). El reloj, la posesión y el formato se ajustan con +/−. Los dorsales se escriben con dígitos en un panel propio, con 00 y borrar, sin teclado de Android.
 - Guardar cambia también el reloj visible conservando el tiempo ya jugado y persiste el formato completo. Se corrigen configuraciones antiguas cuyo reloj excedía la duración declarada.
@@ -27,11 +28,11 @@ Crear una aplicación Android instalable mediante APK para que una persona contr
 ## Requisitos de uso y calidad
 - Interfaz en español, exclusivamente horizontal, con números grandes y botones fáciles de pulsar.
 - Pantalla principal con equipo local y visitante a los lados; reloj, período y controles en el centro.
-- El tablero distribuye el espacio disponible sin escalar toda la interfaz. En alturas extremas permite desplazamiento. Los paneles mantienen cabecera y acciones visibles, indican el desplazamiento de las listas y adaptan el número de columnas. Los nombres se editan en un panel compacto que se mantiene sobre el teclado; se guardan con Guardar o Listo.
-- Nombre visible FISCORE. Botón (?) junto al menú para créditos, versión, contacto y licencias. Creado por Martin Villy; consultas, contrataciones y donaciones: 925449100, con copia explícita del número.
+- El tablero reorganiza sus paneles según el espacio disponible y aumenta controles y dígitos en tabletas. En alturas extremas permite desplazamiento. Los paneles mantienen cabecera y acciones visibles, indican el desplazamiento de las listas y adaptan el número de columnas. Los nombres se editan en un panel compacto que se mantiene sobre el teclado; se guardan con Guardar o Listo.
+- Nombre visible FISCORE. Botón (?) junto al menú para créditos, versión, contacto y licencias. Creado por Martin Villy; consultas y contrataciones: ma.garciavi@unsm.edu.pe, con copia explícita del correo. Donaciones mediante la imagen original de Yape, con ampliación del QR.
 - Funcionamiento sin cuenta, anuncios ni internet.
 - Mantener la pantalla encendida durante el partido.
-- El reloj se pausa al salir de la app o al abrir el registro de una falta. Al reabrir, el partido se recupera pausado en el último estado guardado. Durante el cronometraje se guarda cada segundo.
+- El reloj se pausa al ocultar la app o por orden explícita del operador. Abrir opciones o registrar/corregir faltas no lo detiene. Al reabrir, el partido se recupera pausado en el último estado guardado. Durante el cronometraje se guarda cada segundo.
 - Reloj con décimas en el último minuto. Guardado local en Android y pantalla encendida durante el uso.
 - Implementación con Flutter, Dart, Java, Gradle y SDK Android ya instalados en la laptop, sin dependencias externas adicionales de ejecución.
 

@@ -27,10 +27,32 @@ class CreditsPanel extends StatefulWidget {
 class _CreditsPanelState extends State<CreditsPanel> {
   bool copied = false;
 
-  Future<void> _copyNumber() async {
-    await Clipboard.setData(const ClipboardData(text: '925449100'));
+  Future<void> _copyEmail() async {
+    await Clipboard.setData(
+      const ClipboardData(text: 'ma.garciavi@unsm.edu.pe'),
+    );
     if (mounted) setState(() => copied = true);
   }
+
+  void _showQr() => showDialog<void>(
+    context: context,
+    builder: (ctx) => MatchPanel(
+      title: 'Donaciones con Yape',
+      subtitle: 'Pellizca para ampliar el QR',
+      maxWidth: 720,
+      maxHeight: 1000,
+      child: InteractiveViewer(
+        maxScale: 5,
+        child: Center(
+          child: Image.asset(
+            'assets/yape-donaciones.png',
+            fit: BoxFit.contain,
+            semanticLabel: 'QR de Yape de Martin Alonso Garcia Villy',
+          ),
+        ),
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -89,15 +111,15 @@ class _CreditsPanelState extends State<CreditsPanel> {
           ),
           const SizedBox(height: 12),
           const Text(
-            'Consultas, contrataciones y donaciones',
+            'Consultas y contrataciones',
             style: TextStyle(color: muted, fontSize: 12),
           ),
           const SizedBox(height: 6),
           const SelectableText(
-            '925 449 100',
+            'ma.garciavi@unsm.edu.pe',
             style: TextStyle(
               color: amber,
-              fontSize: 25,
+              fontSize: 18,
               fontWeight: FontWeight.w700,
               fontFeatures: [FontFeature.tabularFigures()],
             ),
@@ -105,11 +127,40 @@ class _CreditsPanelState extends State<CreditsPanel> {
           const SizedBox(height: 12),
           OutlinedButton.icon(
             key: const ValueKey('copy-contact'),
-            onPressed: _copyNumber,
+            onPressed: _copyEmail,
             icon: Icon(copied ? Icons.check : Icons.copy_outlined, size: 18),
             label: Text(
-              copied ? 'Número copiado' : 'Copiar número',
+              copied ? 'Correo copiado' : 'Copiar correo',
               style: const TextStyle(fontSize: 12),
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Donaciones con Yape',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            key: const ValueKey('donation-qr'),
+            onPressed: _showQr,
+            icon: const Icon(Icons.qr_code_2),
+            label: const Text('Ampliar QR de Yape'),
+          ),
+          const SizedBox(height: 8),
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 280),
+              child: InkWell(
+                key: const ValueKey('donation-qr-image'),
+                onTap: _showQr,
+                child: AspectRatio(
+                  aspectRatio: 1131 / 1599,
+                  child: Image.asset(
+                    'assets/yape-donaciones.png',
+                    semanticLabel: 'Donar con Yape. Toca para ampliar el QR.',
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -118,7 +169,7 @@ class _CreditsPanelState extends State<CreditsPanel> {
     return MatchPanel(
       title: 'Créditos y contacto',
       maxWidth: 840,
-      maxHeight: 440,
+      maxHeight: 760,
       actions: Row(
         children: [
           const Expanded(

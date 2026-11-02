@@ -1,26 +1,25 @@
-FISCORE 1.5.0 — Android 7.0 o posterior
+FISCORE 1.6.1 — Android 7.0 o posterior
 
 Envía FISCORE.apk por WhatsApp como DOCUMENTO.
-Ábrela en el administrador de archivos del teléfono e instálala sobre la versión anterior.
-No desinstales para conservar los datos. La app se muestra en horizontal.
+Instálala sobre la versión anterior sin desinstalar para conservar los datos.
+Se mantienen el paquete y la firma de desarrollo de FISCORE 1.5.0.
 
 NOVEDADES
-- Mis equipos: icono de personas o menú de tres puntos. Guarda los jugadores y dorsales,
-  y carga cualquier plantilla como local o visitante, sin puntos ni faltas anteriores.
-  Para actualizar una plantilla, vuelve a guardarla con el mismo nombre.
-- Los jugadores con más faltas aparecen primero; en empate, se ordenan por dorsal.
-- Sin pestaña Registro ni franja inferior de estado.
-- Acceso rápido a 2 tiempos de 10 minutos; también 4 x 10 y formato personalizado.
-- Audio Official NBA Horn SFX seleccionado por el usuario. Prueba desde los tres puntos.
-- Créditos (?): Martin Villy. Consultas, contrataciones y donaciones: 925 449 100.
-  Tu apoyo voluntario ayuda a mejorar FISCORE. ¡Gracias!
+- Tablero exclusivamente horizontal, adaptable al tamaño de ventanas horizontales y divididas.
+  Los controles aumentan de tamaño en tabletas; las ventanas extremas permiten desplazamiento.
+- Abrir opciones o registrar/corregir faltas ya no pausa el reloj.
+  Usa PAUSAR cuando corresponda. Ocultar la app o enviarla al fondo sí pausa el partido.
+- SAQUE ALTERNO: selecciona el equipo al que corresponde el próximo saque.
+  La flecha es manual: cambia de equipo después del saque. Tocar la selección otra vez la borra.
+  Se conserva entre períodos y al reabrir, y se reinicia en un nuevo partido.
+- Créditos (?): consultas y contrataciones a ma.garciavi@unsm.edu.pe, con botón para copiar.
+- Donaciones: QR original de Yape, con botón Ampliar QR de Yape y zoom con dos dedos.
 
 CONTROLES
-Corregir cambia +1/+2/+3 a −1/−2/−3. Deshacer revierte el último cambio.
-Faltas + / − usa botones directos por jugador y guarda inmediatamente.
-El reloj y los tiempos se ajustan con +/−. El dorsal se escribe con dígitos; 88 son dos toques.
-Solo los nombres usan el teclado Android, con el campo visible encima.
-24 s y 14 s controlan la posesión; también dispone de pausa independiente.
-El reloj se pausa al salir de la app. La chicharra usa el volumen de alarmas de Android.
+INICIAR/PAUSAR coordina ambos relojes. La posesión tiene pausa independiente.
+24 s y 14 s reinician la posesión manualmente; no cambian la flecha de saque alterno.
+Cambiar formato, corregir el reloj principal o reemplazar un equipo requiere pausar manualmente.
+Corregir cambia +1/+2/+3 a −1/−2/−3. Deshacer revierte el último cambio de puntos o faltas.
+La chicharra usa el volumen de alarmas de Android.
 
-La APK funciona sin internet ni cuenta y tiene firma de desarrollo para instalación directa.
+Funciona sin internet ni cuenta. APK con firma de desarrollo para instalación directa.

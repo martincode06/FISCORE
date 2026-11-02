@@ -114,7 +114,7 @@ void main() {
       expect(find.text('Guardado local · Sin conexión'), findsNothing);
       await tap(tester, find.byKey(const ValueKey('credits-button')));
       await tap(tester, find.byKey(const ValueKey('copy-contact')));
-      expect(find.text('Número copiado'), findsOneWidget);
+      expect(find.text('Correo copiado'), findsOneWidget);
       await close(tester);
       await tap(tester, find.byKey(const ValueKey('saved-teams-button')));
       await tap(tester, find.byKey(const ValueKey('save-team-0')));
@@ -171,7 +171,7 @@ void main() {
     await tap(tester, find.text('INICIAR'));
     expect(game.running, isTrue);
     await tap(tester, find.text('Faltas + / −').first);
-    expect(game.running, isFalse);
+    expect(game.running, isTrue);
     for (var n = 0; n < 5; n++) {
       await tap(tester, find.byKey(const ValueKey('foul-plus-0-0')));
     }
@@ -553,10 +553,10 @@ void main() {
     expect(find.text('FISCORE'), findsOneWidget);
     await tap(tester, find.byKey(const ValueKey('credits-button')));
     expect(find.text('Martin Villy'), findsOneWidget);
-    expect(find.text('925 449 100'), findsOneWidget);
+    expect(find.text('ma.garciavi@unsm.edu.pe'), findsOneWidget);
     expect(find.text('Versión 1.5.0'), findsOneWidget);
     await tap(tester, find.byKey(const ValueKey('copy-contact')));
-    expect(clipboard, '925449100');
+    expect(clipboard, 'ma.garciavi@unsm.edu.pe');
     await close(tester);
     final clock = game.remainingMs;
     await tap(tester, find.byTooltip('Opciones'));

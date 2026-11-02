@@ -129,7 +129,8 @@ void main() {
     expect(game.shotRemainingMs, 7600);
     game.running = true;
     game.setShotClock(10000);
-    expect(game.shotRemainingMs, 7600);
+    expect(game.shotRemainingMs, 10000);
+    expect(game.running, isTrue);
     game.running = false;
     game.setClock(0);
     game.nextPeriod();

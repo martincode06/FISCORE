@@ -61,3 +61,4 @@ __pycache__/
 /entrega/*.apk
 !/entrega/FISCORE.apk
 !/entrega/fiscore-v1.5.0.apk
+!/entrega/fiscore-v1.6.1.apk

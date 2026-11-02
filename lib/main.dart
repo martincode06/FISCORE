@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'game.dart';
@@ -33,8 +34,14 @@ Future<void> main() async {
 }
 
 class ScoreApp extends StatelessWidget {
-  const ScoreApp({super.key, required this.initialGame, this.initialWarning});
+  const ScoreApp({
+    super.key,
+    required this.initialGame,
+    this.initialWarning,
+    this.stopwatch,
+  });
   final Game initialGame;
+  final Stopwatch? stopwatch;
   final String? initialWarning;
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -65,7 +72,11 @@ class ScoreApp extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+          textStyle: const TextStyle(
+            fontFamily: 'sans-serif',
+            fontWeight: FontWeight.w800,
+            fontSize: 16,
+          ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -77,13 +88,23 @@ class ScoreApp extends StatelessWidget {
         ),
       ),
     ),
-    home: MatchScreen(game: initialGame, initialWarning: initialWarning),
+    home: MatchScreen(
+      game: initialGame,
+      initialWarning: initialWarning,
+      stopwatch: stopwatch,
+    ),
   );
 }
 
 class MatchScreen extends StatefulWidget {
-  const MatchScreen({super.key, required this.game, this.initialWarning});
+  const MatchScreen({
+    super.key,
+    required this.game,
+    this.initialWarning,
+    this.stopwatch,
+  });
   final Game game;
+  final Stopwatch? stopwatch;
   final String? initialWarning;
   @override
   State<MatchScreen> createState() => _MatchScreenState();
@@ -91,7 +112,7 @@ class MatchScreen extends StatefulWidget {
 
 class _MatchScreenState extends State<MatchScreen> with WidgetsBindingObserver {
   Game get game => widget.game;
-  final stopwatch = Stopwatch();
+  late final stopwatch = widget.stopwatch ?? Stopwatch();
   Timer? ticker;
   int lastElapsed = 0;
   int lastSave = 0;
@@ -127,7 +148,7 @@ class _MatchScreenState extends State<MatchScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.inactive ||
+    if (state == AppLifecycleState.hidden ||
         state == AppLifecycleState.paused) {
       if (game.running) {
         _tick();
@@ -242,7 +263,6 @@ class _MatchScreenState extends State<MatchScreen> with WidgetsBindingObserver {
 
   Future<void> _editShot() async {
     if (game.finished) return;
-    if (game.running) _toggleClock();
     var tenths = (game.shotRemainingMs / 100).round();
     final value = await showDialog<int>(
       context: context,
@@ -303,7 +323,10 @@ class _MatchScreenState extends State<MatchScreen> with WidgetsBindingObserver {
         ),
       ),
     );
-    if (value != null && mounted) _change(() => game.setShotClock(value));
+    if (value != null && mounted) {
+      _tick();
+      _change(() => game.setShotClock(value));
+    }
   }
 
   Future<bool> _confirm(String title, String body, String label) async =>
@@ -482,7 +505,6 @@ class _MatchScreenState extends State<MatchScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _savedTeams() async {
-    if (game.running) _toggleClock();
     await showDialog<void>(
       context: context,
       builder: (_) => SavedTeamsPanel(
@@ -490,6 +512,10 @@ class _MatchScreenState extends State<MatchScreen> with WidgetsBindingObserver {
         read: () => native.invokeMethod<String>('loadTeams'),
         store: (value) => native.invokeMethod<void>('saveTeams', value),
         use: (team, slot) async {
+          if (game.running) {
+            _message('Pausa el reloj antes de reemplazar un equipo.');
+            return false;
+          }
           final needsNewGame = game.finished;
           if (needsNewGame ||
               game.teams[slot].score != 0 ||
@@ -527,7 +553,6 @@ class _MatchScreenState extends State<MatchScreen> with WidgetsBindingObserver {
 
   Future<void> _foulDialog(int team, {Player? initial}) async {
     if (game.finished) return;
-    if (game.running) _toggleClock();
     await showDialog<void>(
       context: context,
       builder: (_) => FoulsPanel(
@@ -586,7 +611,9 @@ class _MatchScreenState extends State<MatchScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) => PopScope(
     canPop: !game.running,
     onPopInvokedWithResult: (didPop, result) {
-      if (!didPop && game.running) _toggleClock();
+      if (!didPop && game.running) {
+        _message('Usa PAUSAR antes de salir del partido.');
+      }
     },
     child: Scaffold(
       body: SafeArea(
@@ -600,105 +627,148 @@ class _MatchScreenState extends State<MatchScreen> with WidgetsBindingObserver {
     ),
   );
 
+  List<Widget> _navigationTabs() {
+    return List.generate(
+      2,
+      (i) => Expanded(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 2),
+          child: TextButton(
+            onPressed: () => setState(() => page = i),
+            style: TextButton.styleFrom(
+              foregroundColor: page == i ? amber : muted,
+              backgroundColor: page == i
+                  ? amber.withValues(alpha: .10)
+                  : Colors.transparent,
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+            ),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                ['Marcador', 'Jugadores'][i],
+                style: const TextStyle(fontSize: 13),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _header() => LayoutBuilder(
     builder: (context, constraints) => Container(
-      height: 46,
+      height: constraints.maxWidth < 480 ? 91 : 47,
       padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: Color(0xFF243149))),
       ),
-      child: Row(
+      child: Column(
         children: [
-          const Icon(Icons.sports_basketball, color: amber, size: 24),
-          if (constraints.maxWidth >= 720)
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: Text(
-                'FISCORE',
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 14,
-                  letterSpacing: 1,
-                ),
-              ),
-            ),
-          const SizedBox(width: 8),
-          ...List.generate(
-            2,
-            (i) => Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 2),
-                child: TextButton(
-                  onPressed: () => setState(() => page = i),
-                  style: TextButton.styleFrom(
-                    foregroundColor: page == i ? amber : muted,
-                    backgroundColor: page == i
-                        ? amber.withValues(alpha: .10)
-                        : Colors.transparent,
-                    padding: const EdgeInsets.symmetric(horizontal: 6),
-                  ),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      ['Marcador', 'Jugadores'][i],
-                      style: const TextStyle(fontSize: 13),
+          SizedBox(
+            height: 46,
+            child: Row(
+              children: [
+                const Icon(Icons.sports_basketball, color: amber, size: 24),
+                if (constraints.maxWidth < 480)
+                  const Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      child: Text(
+                        'FISCORE',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                     ),
                   ),
+                if (constraints.maxWidth >= 720)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Text(
+                      'FISCORE',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 14,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ),
+                const SizedBox(width: 8),
+                if (constraints.maxWidth >= 480) ..._navigationTabs(),
+                IconButton(
+                  key: const ValueKey('saved-teams-button'),
+                  tooltip: 'Mis equipos',
+                  onPressed: _savedTeams,
+                  constraints: const BoxConstraints.tightFor(
+                    width: 44,
+                    height: 44,
+                  ),
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.groups_outlined, size: 23),
                 ),
-              ),
+                IconButton(
+                  tooltip: 'Configurar partido',
+                  onPressed: game.finished ? null : _settings,
+                  constraints: const BoxConstraints.tightFor(
+                    width: 44,
+                    height: 44,
+                  ),
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.tune, size: 22),
+                ),
+                IconButton(
+                  key: const ValueKey('credits-button'),
+                  tooltip: 'Créditos y contacto',
+                  onPressed: _credits,
+                  constraints: const BoxConstraints.tightFor(
+                    width: 44,
+                    height: 44,
+                  ),
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.help_outline, size: 23),
+                ),
+                PopupMenuButton<String>(
+                  tooltip: 'Opciones',
+                  onSelected: (value) {
+                    if (value == 'new') _newGame();
+                    if (value == 'finish') _finish();
+                    if (value == 'rules') _rules();
+                    if (value == 'sound') _horn();
+                    if (value == 'teams') _savedTeams();
+                  },
+                  itemBuilder: (_) => [
+                    const PopupMenuItem(
+                      value: 'teams',
+                      child: Text('Mis equipos'),
+                    ),
+                    PopupMenuItem(
+                      value: 'sound',
+                      enabled: !game.running,
+                      child: const Text('Probar chicharra'),
+                    ),
+                    const PopupMenuItem(
+                      value: 'rules',
+                      child: Text('Reglas de faltas'),
+                    ),
+                    if (!game.finished)
+                      const PopupMenuItem(
+                        value: 'finish',
+                        child: Text('Finalizar partido'),
+                      ),
+                    const PopupMenuItem(
+                      value: 'new',
+                      child: Text('Nuevo partido'),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          IconButton(
-            key: const ValueKey('saved-teams-button'),
-            tooltip: 'Mis equipos',
-            onPressed: _savedTeams,
-            constraints: const BoxConstraints.tightFor(width: 44, height: 44),
-            padding: EdgeInsets.zero,
-            icon: const Icon(Icons.groups_outlined, size: 23),
-          ),
-          IconButton(
-            tooltip: 'Configurar partido',
-            onPressed: game.finished ? null : _settings,
-            constraints: const BoxConstraints.tightFor(width: 44, height: 44),
-            padding: EdgeInsets.zero,
-            icon: const Icon(Icons.tune, size: 22),
-          ),
-          IconButton(
-            key: const ValueKey('credits-button'),
-            tooltip: 'Créditos y contacto',
-            onPressed: _credits,
-            constraints: const BoxConstraints.tightFor(width: 44, height: 44),
-            padding: EdgeInsets.zero,
-            icon: const Icon(Icons.help_outline, size: 23),
-          ),
-          PopupMenuButton<String>(
-            tooltip: 'Opciones',
-            onSelected: (value) {
-              if (value == 'new') _newGame();
-              if (value == 'finish') _finish();
-              if (value == 'rules') _rules();
-              if (value == 'sound') _horn();
-              if (value == 'teams') _savedTeams();
-            },
-            itemBuilder: (_) => [
-              const PopupMenuItem(value: 'teams', child: Text('Mis equipos')),
-              PopupMenuItem(
-                value: 'sound',
-                enabled: !game.running,
-                child: const Text('Probar chicharra'),
-              ),
-              const PopupMenuItem(
-                value: 'rules',
-                child: Text('Reglas de faltas'),
-              ),
-              if (!game.finished)
-                const PopupMenuItem(
-                  value: 'finish',
-                  child: Text('Finalizar partido'),
-                ),
-              const PopupMenuItem(value: 'new', child: Text('Nuevo partido')),
-            ],
-          ),
+          if (constraints.maxWidth < 480)
+            SizedBox(height: 44, child: Row(children: _navigationTabs())),
         ],
       ),
     ),
@@ -706,44 +776,47 @@ class _MatchScreenState extends State<MatchScreen> with WidgetsBindingObserver {
 
   Widget _board() => LayoutBuilder(
     builder: (context, box) {
-      if (box.maxWidth < 560) {
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 280,
-                child: Row(
-                  children: [
-                    Expanded(child: _teamCard(0, compact: false)),
-                    const SizedBox(width: 8),
-                    Expanded(child: _teamCard(1, compact: false)),
-                  ],
-                ),
+      // Scale controls as well as digits on large tablets. Logical dimensions
+      // still follow the window aspect ratio, including live window resizing.
+      final width = math.max(560.0, box.maxWidth);
+      final scale = math
+          .min(box.maxWidth / 900, box.maxHeight / 420)
+          .clamp(1.0, 1.8);
+      final height = math.max(box.maxHeight, 310 * scale);
+      final compact = height / scale < 360;
+      final board = SizedBox(
+        width: width,
+        height: height,
+        child: FittedBox(
+          fit: BoxFit.fill,
+          child: SizedBox(
+            width: width / scale,
+            height: height / scale,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 6, 8, 4),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(flex: 3, child: _teamCard(0, compact: compact)),
+                  const SizedBox(width: 8),
+                  Expanded(flex: 4, child: _clockPanel(compact: compact)),
+                  const SizedBox(width: 8),
+                  Expanded(flex: 3, child: _teamCard(1, compact: compact)),
+                ],
               ),
-              const SizedBox(height: 8),
-              SizedBox(height: 280, child: _clockPanel(compact: false)),
-            ],
+            ),
           ),
-        );
-      }
-      final compact = box.maxHeight < 270;
-      final board = Padding(
-        padding: const EdgeInsets.fromLTRB(8, 6, 8, 4),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(flex: 3, child: _teamCard(0, compact: compact)),
-            const SizedBox(width: 8),
-            Expanded(flex: 4, child: _clockPanel(compact: compact)),
-            const SizedBox(width: 8),
-            Expanded(flex: 3, child: _teamCard(1, compact: compact)),
-          ],
         ),
       );
-      return box.maxHeight < 240
-          ? SingleChildScrollView(child: SizedBox(height: 260, child: board))
+      final viewport = height > box.maxHeight
+          ? SingleChildScrollView(child: board)
           : board;
+      return width > box.maxWidth
+          ? SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SizedBox(width: width, height: box.maxHeight, child: viewport),
+            )
+          : viewport;
     },
   );
 
@@ -773,7 +846,7 @@ class _MatchScreenState extends State<MatchScreen> with WidgetsBindingObserver {
             style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
           ),
           Expanded(
-            child: Center(
+            child: SizedBox.expand(
               child: FittedBox(
                 fit: BoxFit.contain,
                 child: Text(
@@ -992,7 +1065,7 @@ class _MatchScreenState extends State<MatchScreen> with WidgetsBindingObserver {
         ),
       ),
       Expanded(
-        child: Center(
+        child: SizedBox.expand(
           child: FittedBox(
             fit: BoxFit.contain,
             child: Text(
@@ -1066,7 +1139,83 @@ class _MatchScreenState extends State<MatchScreen> with WidgetsBindingObserver {
       ),
       const SizedBox(height: 6),
       _shotPanel(compact: compact),
+      const SizedBox(height: 4),
+      _possessionArrow(),
     ],
+  );
+
+  Widget _possessionArrow() => SizedBox(
+    height: 48,
+    child: Row(
+      children: [
+        for (final team in [0, 1])
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: OutlinedButton(
+                key: ValueKey('possession-$team'),
+                onPressed: game.finished
+                    ? null
+                    : () => _change(
+                        () => game.setPossessionTeam(
+                          game.possessionTeam == team ? null : team,
+                        ),
+                      ),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  foregroundColor: game.possessionTeam == team
+                      ? teamColors[team]
+                      : muted,
+                  backgroundColor: game.possessionTeam == team
+                      ? teamColors[team].withValues(alpha: .18)
+                      : null,
+                ),
+                child: Tooltip(
+                  message:
+                      'Próximo saque alterno: ${game.teams[team].name}. '
+                      'Cambiar manualmente después del saque; tocar otra vez borra.',
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        game.possessionTeam == team
+                            ? (team == 0
+                                  ? Icons.arrow_back
+                                  : Icons.arrow_forward)
+                            : Icons.radio_button_unchecked,
+                        size: 28,
+                      ),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'SAQUE ALTERNO',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 8),
+                            ),
+                            Text(
+                              game.teams[team].name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    ),
   );
 
   Widget _shotPanel({required bool compact}) {
@@ -1363,7 +1512,6 @@ class _MatchScreenState extends State<MatchScreen> with WidgetsBindingObserver {
                     onPlus: game.finished || game.isExcluded(player.id)
                         ? null
                         : () {
-                            if (game.running) _toggleClock();
                             _change(
                               () =>
                                   game.addFoul(team, player, FoulType.personal),
@@ -1377,7 +1525,6 @@ class _MatchScreenState extends State<MatchScreen> with WidgetsBindingObserver {
                                 .any((f) => f.type == FoulType.personal)
                         ? null
                         : () {
-                            if (game.running) _toggleClock();
                             _change(
                               () => game.removeLatestFoul(
                                 team,

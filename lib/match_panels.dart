@@ -171,15 +171,19 @@ class _SettingsPanelState extends State<SettingsPanel> {
               style: const TextStyle(color: amber, fontWeight: FontWeight.w700),
             ),
           ),
-          TextButton(
-            onPressed: saving ? null : () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+          Flexible(
+            child: TextButton(
+              onPressed: saving ? null : () => Navigator.pop(context),
+              child: const Text('Cancelar'),
+            ),
           ),
           const SizedBox(width: 8),
-          FilledButton(
-            key: const ValueKey('save-settings'),
-            onPressed: saving ? null : _save,
-            child: Text(saving ? 'Guardando…' : 'Guardar'),
+          Flexible(
+            child: FilledButton(
+              key: const ValueKey('save-settings'),
+              onPressed: saving ? null : _save,
+              child: Text(saving ? 'Guardando…' : 'Guardar'),
+            ),
           ),
         ],
       ),

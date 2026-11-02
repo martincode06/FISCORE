@@ -1,6 +1,6 @@
 # FISCORE
 
-Marcador Android de básquet, en español y horizontal, desarrollado con Flutter y el SDK Android de esta laptop. Versión 1.5.0.
+Marcador Android de básquet, en español, exclusivamente horizontal y adaptable al tamaño de la ventana, desarrollado con Flutter y el SDK Android de esta laptop. Versión 1.6.1.
 
 ## Uso
 
@@ -9,10 +9,10 @@ Marcador Android de básquet, en español y horizontal, desarrollado con Flutter
 3. Los jugadores con más faltas aparecen primero, tanto en Jugadores como en el panel de faltas. En empate se ordenan por dorsal. Se recalcula al sumar, quitar o deshacer; la plantilla guardada y los identificadores de cada jugador se mantienen.
 4. INICIAR y PAUSAR controlan el reloj principal. El botón de reloj permite corregir minutos y segundos con +/−. El último minuto muestra décimas.
 5. Suma puntos con +1, +2 y +3. Corregir transforma los mismos botones en −1, −2 y −3, de forma independiente por equipo. Las restas que dejarían puntos negativos se deshabilitan. Deshacer revierte el último cambio de puntos o faltas.
-6. Faltas + / − pausa el partido. Elige el tipo y usa los controles de cada jugador; se guarda al tocar. El menos retira la última falta de ese tipo de ese jugador. El panel vuelve arriba para mostrar el nuevo orden y resalta al jugador modificado.
+6. Faltas + / − mantiene el estado del reloj; pausa manualmente cuando lo indique el árbitro. Elige el tipo y usa los controles de cada jugador; se guarda al tocar. El menos retira la última falta de ese tipo de ese jugador. El panel vuelve arriba para mostrar el nuevo orden y resalta al jugador modificado.
 7. Los dos accesos principales son Marcador y Jugadores. Se retiraron la pestaña Registro y la franja inferior de estado. El guardado automático continúa; los errores se avisan en pantalla.
 8. Los tres puntos permiten probar la chicharra con el reloj pausado, abrir Mis equipos, consultar reglas, finalizar y empezar un partido nuevo. La señal de período utiliza el clip elegido por el usuario, Official NBA Horn SFX; la de posesión usa un fragmento corto distinto.
-9. (?) abre los créditos: Martin Villy, consultas, contrataciones y donaciones al 925 449 100, copia del número y la nota «Tu apoyo voluntario ayuda a mejorar FISCORE. ¡Gracias!».
+9. (?) abre los créditos: Martin Villy, consultas y contrataciones a ma.garciavi@unsm.edu.pe, copia del correo, QR original de Yape ampliable para donaciones y la nota «Tu apoyo voluntario ayuda a mejorar FISCORE. ¡Gracias!».
 
 ## Mis equipos
 
@@ -25,7 +25,15 @@ Abre el icono de personas de la barra superior o Mis equipos en los tres puntos.
 - Si el lado elegido tiene puntos o faltas, se pide confirmar su reemplazo. Si el partido ya terminó, se ofrece iniciar otro partido en cero antes de cargar la plantilla.
 - Los equipos se almacenan por separado del partido y siguen disponibles al empezar otro encuentro o reabrir la app. Los cambios posteriores de un jugador no alteran una plantilla guardada hasta que la actualices.
 
+## Ventanas y manejo del reloj
+
+El tablero mantiene siempre equipo local a la izquierda, reloj al centro y visitante a la derecha. La orientación está bloqueada en horizontal. En tabletas horizontales crecen tanto los controles como los dígitos. Las ventanas con muy poca altura permiten desplazamiento; los paneles conservan cabecera y acciones visibles. Se admiten ambos sentidos horizontales y cambios de tamaño sin perder el partido.
+
+Abrir faltas, Mis equipos, Jugadores, créditos, reglas o ajustes de posesión no detiene el reloj. Sumar o corregir faltas tampoco lo pausa. INICIAR/PAUSAR sigue siendo el control del operador. Cambiar el formato, corregir el reloj principal o reemplazar una plantilla requiere pausar explícitamente. Ocultar la app o enviarla al fondo la pausa; perder temporalmente el foco mientras sigue visible no la pausa.
+
 ## Posesión y faltas
+
+La flecha de **SAQUE ALTERNO** es independiente del reloj de posesión: toca el equipo al que corresponde el próximo saque y el otro equipo para cambiarla después del saque. Tocar de nuevo el equipo seleccionado borra la indicación. No cambia automáticamente por puntos, faltas o paso de período. Se conserva al reabrir la app y se borra en un nuevo partido.
 
 24 s y 14 s reinician la posesión manualmente. Sumar puntos o faltas no la cambia automáticamente. INICIAR/PAUSAR coordina ambos relojes; la posesión tiene pausa independiente. Sus tres puntos permiten ajustar segundos y décimas, apagarla o consultar ayuda. Una nueva cuenta más larga que el tiempo restante queda sin cuenta; no se apaga una cuenta ya en marcha por bajar de 14 segundos. Al agotarse, el operador decide si corresponde pausar según la jugada y el árbitro. El fin de período tiene prioridad si ambos relojes vencen a la vez.
 
@@ -37,7 +45,7 @@ Referencia: [Reglas Oficiales FIBA 2024 v1.0a](https://assets.fiba.basketball/im
 
 El partido se guarda después de cada cambio y cada segundo durante el juego. Al salir se pausa y se recupera pausado. La pantalla permanece encendida. El audio utiliza el volumen de alarmas. Funciona sin cuenta ni internet; guarda un partido y varias plantillas de equipos. Desinstalar borra estos datos.
 
-Envía entrega/FISCORE.apk, versión 1.5.0, por WhatsApp como documento. También está en entrega/fiscore-v1.5.0.apk. Instálala sobre la versión anterior, sin desinstalar, para conservar el partido y las plantillas: se mantienen el paquete y la firma. Es una APK con firma de desarrollo para instalación directa, no una publicación en Google Play.
+Envía entrega/FISCORE.apk, versión 1.6.1, por WhatsApp como documento. También está en entrega/fiscore-v1.6.1.apk. Instálala sobre la versión anterior, sin desinstalar, para conservar el partido y las plantillas: se mantienen el paquete y la firma. Es una APK con firma de desarrollo para instalación directa, no una publicación en Google Play.
 
 ## Desarrollo
 
